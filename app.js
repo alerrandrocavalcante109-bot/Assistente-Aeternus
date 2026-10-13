@@ -134,7 +134,8 @@
     };
 
     recognition.onresult = (event) => {
-      touch();
+      // Ignore the assistant's own spoken audio.
+      if (state.speaking) return;
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (!event.results[i].isFinal) continue;
         const transcript = event.results[i][0].transcript.trim();
@@ -148,8 +149,12 @@
         stopAssistant("Permissão do microfone negada. Autorize o microfone nas configurações do navegador.");
       } else if (event.error === "audio-capture") {
         stopAssistant("Nenhum microfone disponível. Verifique o dispositivo.");
-      } else if (event.error !== "no-speech" && event.error !== "aborted") {
-        els.support.textContent = "Reconhecimento de voz: " + event.error + ". O navegador pode tentar reconectar.";
+      } else if (event.error === "network") {
+        els.support.textContent = "O serviço de reconhecimento de voz falhou por rede. Confira a conexão e tente novamente no Chrome.";
+      } else if (event.error === "no-speech") {
+        els.support.textContent = "Não detectei fala ainda. Diga “Aeternus” perto do microfone.";
+      } else if (event.error !== "aborted") {
+        els.support.textContent = "Reconhecimento de voz: " + event.error + ". Confira a permissão do microfone e tente novamente.";
       }
     };
 
@@ -169,9 +174,15 @@
     try {
       recognition.start();
       state.manualStop = false;
+      els.support.textContent = "Solicitando acesso ao microfone…";
       return true;
     } catch (error) {
-      els.support.textContent = "Não consegui iniciar o microfone: " + error.message;
+      state.recognition = null;
+      state.listening = false;
+      els.start.disabled = false;
+      els.stop.disabled = true;
+      setStatus("Não iniciou", "warning");
+      els.support.textContent = "Não consegui iniciar o microfone: " + error.message + ". Recarregue a página e tente novamente.";
       return false;
     }
   }
@@ -181,9 +192,8 @@
     if (!state.waitingForCommand) {
       if (!match.found) return;
       touch();
-      const tail = transcript.slice(Math.max(0, transcript.toLocaleLowerCase("pt-BR").indexOf("aeternus") + 8)).trim();
-      if (tail.length > 1) {
-        const command = tail.replace(/^[,.:;\s]+/, "");
+      const command = match.rest;
+      if (command.length > 1) {
         addMessage("user", command);
         void askAI(command);
       } else {

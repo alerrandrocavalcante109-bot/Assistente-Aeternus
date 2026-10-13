@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b14">
+  <meta name="description" content="Aeternus Assistente por Voz: assistente de navegador com ativação por voz e provedores de IA configuráveis.">
+  <title>Aeternus — Assistente por Voz</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Aeternus início">
+        <span class="brand-mark" aria-hidden="true">A</span>
+        <span><strong>Aeternus</strong><small>ASSISTENTE POR VOZ</small></span>
+      </a>
+      <button id="settings-toggle" class="icon-button" type="button" aria-expanded="false" aria-controls="settings-panel" title="Configurações">⚙</button>
+    </header>
+
+    <section class="hero" aria-labelledby="main-title">
+      <div class="orb-wrap">
+        <div id="voice-orb" class="voice-orb" aria-hidden="true"><span></span><i></i></div>
+      </div>
+      <p id="status-pill" class="status-pill"><span class="status-dot"></span><span id="status-text">Pronta para iniciar</span></p>
+      <h1 id="main-title">Olá, sou a <span>Aeternus.</span></h1>
+      <p class="subtitle">Diga meu nome para começar a conversar.</p>
+      <p class="hint">Fale <b>“Aeternus”</b> e depois seu pedido.</p>
+      <div class="main-actions">
+        <button id="start-button" class="primary-button" type="button"><span>🎙</span> Ativar voz</button>
+        <button id="stop-button" class="secondary-button" type="button" disabled>Parar</button>
+      </div>
+      <p id="support-note" class="support-note">O navegador solicitará acesso ao microfone.</p>
+    </section>
+
+    <section class="conversation-panel" aria-label="Conversa">
+      <div class="section-heading"><div><h2>Conversa</h2><p>Suas mensagens aparecem aqui.</p></div><button id="clear-button" class="text-button" type="button">Limpar</button></div>
+      <div id="messages" class="messages" aria-live="polite">
+        <div class="empty-state" id="empty-state"><span>✦</span><p>Quando você chamar “Aeternus”, nossa conversa começa aqui.</p></div>
+      </div>
+      <form id="chat-form" class="chat-form">
+        <label class="visually-hidden" for="message-input">Digite uma mensagem</label>
+        <input id="message-input" type="text" placeholder="Escreva sua mensagem..." autocomplete="off" maxlength="4000">
+        <button type="submit" aria-label="Enviar mensagem">↑</button>
+      </form>
+    </section>
+
+    <section id="settings-panel" class="settings-panel" hidden>
+      <div class="section-heading"><div><h2>Configurações</h2><p>As chaves ficam neste navegador.</p></div><button id="settings-close" class="text-button" type="button">Fechar</button></div>
+      <label for="provider-select">Provedor de IA</label>
+      <select id="provider-select">
+        <option value="gemini">Google Gemini — API gratuita com limites</option>
+        <option value="groq">Groq — modelos gratuitos conforme cota</option>
+        <option value="openrouter">OpenRouter — modelos gratuitos selecionados</option>
+      </select>
+      <label for="api-key">Chave de API</label>
+      <input id="api-key" type="password" placeholder="Cole sua chave pessoal" autocomplete="off">
+      <label for="model-select">Modelo</label>
+      <select id="model-select"></select>
+      <label class="checkbox-row"><input id="auto-speak" type="checkbox" checked> Falar as respostas em voz alta</label>
+      <label class="checkbox-row"><input id="save-key" type="checkbox"> Guardar a chave neste dispositivo</label>
+      <p class="settings-warning">As APIs gratuitas têm cotas e regras próprias. A chave é usada pelo navegador para chamar o provedor selecionado. Não coloque chaves neste repositório nem use uma chave compartilhada. Se salvar, ela ficará no armazenamento local deste navegador.</p>
+      <button id="save-settings" class="primary-button full-button" type="button">Salvar configurações</button>
+    </section>
+
+    <footer><span>AE · versão inicial</span><span id="idle-note">Encerra a escuta após 20 min sem interação.</span></footer>
+  </main>
+  <script src="./app.js" defer></script>
+</body>
+</html>
